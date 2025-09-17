@@ -8,10 +8,15 @@ const notificationSchema = new mongoose.Schema ({
         unique: true
     },
 
-    userid: {
+    userId: {
         type:String,
         required: false,
         unique:true
+    },
+
+    recipient: {
+        type: String,
+        required: false
     },
 
     eventType:{
