@@ -59,15 +59,20 @@ const deleteNotification = async (req, res) => {
     }
 }
 
-const notifyDeedTransaction = async (req,res) => {
-    try{
-        const {buyerEmail, sellerEmail, deedDetails} = req.body;
+const notifyDeedTransaction = async (req, res) => {
+    try {
+        const { buyerEmail, sellerEmail, deedDetails } = req.body;
 
         await sendEmail(
             buyerEmail,
-            
+            "Deed Transaction Successful",
+            `Your deed transaction was successful. Details: ${JSON.stringify(deedDetails)}`,
+            `<h2>Deed Transaction Successful</h2>
+            <p>Your transaction is confirmed.</p>
+            <pre>${JSON.stringify(deedDetails, null, 2)}</pre>`
+
         )
-    }catch(e){
+    } catch (e) {
 
     }
 }
