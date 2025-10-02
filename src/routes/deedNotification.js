@@ -29,3 +29,4 @@ router.post('/deedRegistration', async (req, res) => {
         res.status(500).json({ error: "Failed to send verification email" });
     }
 })
+
