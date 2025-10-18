@@ -15,6 +15,6 @@ app.use('/api/verfication',verificationRoutes);
 
 app.use('/api/verfication',deedNotificationRoutes);
 
-const PORT = process.env.PORT ||5000;
+const PORT = process.env.PORT ||5005;
 app.listen(PORT, ()=> console.log(`Notification service running on port: ${PORT}`));
 
