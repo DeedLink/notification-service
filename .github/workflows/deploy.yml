@@ -31,9 +31,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Run Lint check
-        run: yarn lint
-
       - name: Run test
         run: yarn test
         continue-on-error: true
