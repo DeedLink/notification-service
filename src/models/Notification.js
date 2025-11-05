@@ -11,7 +11,7 @@ const notificationSchema = new mongoose.Schema ({
     userId: {
         type:String,
         required: false,
-        unique:true
+        
     },
 
     recipient: {
