@@ -34,9 +34,6 @@ jobs:
       - name: Run Lint check
         run: yarn lint
 
-      - name: Build TypeScript project
-        run: yarn build
-
       - name: Run test
         run: yarn test
         continue-on-error: true
