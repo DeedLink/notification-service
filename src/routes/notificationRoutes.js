@@ -1,10 +1,13 @@
 import express, { Router } from 'express'
-import { getNotifications,getNotificationById,createNotification,deleteNotification } from '../controllers/notificationController'
+import { getNotifications,getNotificationById,createNotification,deleteNotification,newMessage } from '../controllers/notificationController'
 
-const router = expreq.Router();
+const router = express.Router();
 
 //create a new notification
 router.post('/',createNotification);
+
+
+router.post("/message", newMessage);
 
 //get a new notification 
 router.get('/', getNotifications);
