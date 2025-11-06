@@ -2,26 +2,29 @@ import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema ({
 
-    id:{
+    msgId:{
         type:String,
         required: true,
         unique: true
     },
 
-    userId: {
+    senderName: {
         type:String,
         required: false,
         
     },
 
-    recipient: {
+    senderEmail: {
+        type: String
+    },
+
+    recipientRole: {
         type: String,
         required: false
     },
 
-    eventType:{
-        type: String,
-        required:true
+    recipientEmail: {
+        type: String
     },
 
     subject: {
