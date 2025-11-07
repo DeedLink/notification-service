@@ -1,129 +1,139 @@
-import notificationSchema from "../models/Notification.js";
+import Notification from "../models/Notification.js";
 import sendEmail from "../services/emailService.js";
 
 const createNotification = async (req, res) => {
-    try {
-        const { id, userId, recipient, eventType, message, isRead, timeStamp } = req.body;
+  try {
+    const { msgId, senderName, senderEmail, recipientEmail, message, isRead, timeStamp } = req.body;
 
-        const newNotification = await notificationSchema.create({
-            id,
-            userId,
-            recipient,
-            eventType,
-            message,
-            isRead,
-            timeStamp
-        });
+    const newNotification = await Notification.create({
+      msgId,
+      senderName,
+      senderEmail,
+      recipientEmail,
+      message,
+      isRead,
+      timeStamp
+    });
 
-        res.status(201).json(newNotification);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    res.status(201).json(newNotification);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const getNotifications = async (req, res) => {
-    try {
-        const notifications = await notificationSchema.find().sort({date: -1});
-        res.json(notifications);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const notifications = await Notification.find().sort({ timeStamp: -1 });
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const getNotificationById = async (req, res) => {
-    try {
-        const notification = await notificationSchema.findByPk(req.params.id);
-        if (!notification) {
-            return res.status(404).json({ error: "Notification not found" });
-        }
-        res.json(notification);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+  try {
+    const notification = await Notification.findById(req.params.id);
+    if (!notification) {
+      return res.status(404).json({ error: "Notification not found" });
     }
+    res.json(notification);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const deleteNotification = async (req, res) => {
-    try {
-        const rows = await notificationSchema.destroy({ where: { id: req.params.id } });
-        if (!rows) {
-            return res.status(404).json({ error: "Not found" });
-        }
-        res.json({ message: "Notification deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+  try {
+    const deleted = await Notification.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ error: "Notification not found" });
     }
+    res.json({ message: "Notification deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const notifyDeedTransaction = async (req, res) => {
-    try {
-        const { buyerEmail, sellerEmail, deedDetails } = req.body;
+  try {
+    const { buyerEmail, sellerEmail, deedDetails } = req.body;
 
-        await sendEmail(
-            buyerEmail,
-            "Deed Transaction Successful",
-            `Your deed transaction was successful. Details: ${JSON.stringify(deedDetails)}`,
-            `<h2>Deed Transaction Successful</h2>
-            <p>Your transaction is confirmed.</p>
-            <pre>${JSON.stringify(deedDetails, null, 2)}</pre>`
-        );
+    await sendEmail(
+      buyerEmail,
+      "Deed Transaction Successful",
+      `Your deed transaction was successful. Details: ${JSON.stringify(deedDetails)}`,
+      `<h2>Deed Transaction Successful</h2>
+       <p>Your transaction is confirmed.</p>
+       <pre>${JSON.stringify(deedDetails, null, 2)}</pre>`
+    );
 
-        await sendEmail(
-            sellerEmail,
-            "Deed Transaction Successful",
-            `Your deed transaction was successful. Details: ${JSON.stringify(deedDetails)}`,
-            `<h2>Deed Transaction Successful</h2>
-            <p>Your transaction is confirmed.</p>
-            <pre>${JSON.stringify(deedDetails, null, 2)}</pre>`
-        );
+    await sendEmail(
+      sellerEmail,
+      "Deed Transaction Successful",
+      `Your deed transaction was successful. Details: ${JSON.stringify(deedDetails)}`,
+      `<h2>Deed Transaction Successful</h2>
+       <p>Your transaction is confirmed.</p>
+       <pre>${JSON.stringify(deedDetails, null, 2)}</pre>`
+    );
 
-        res.status(200).json({ message: "Emails sent successfully!" });
-    } catch (e) {
-        res.status(500).json({ message: "Failed to send emails", error: e.message });
-    }
+    res.status(200).json({ message: "Emails sent successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to send emails", error: error.message });
+  }
 };
 
 const sendMessages = async (req, res) => {
-    try {
-        const {
-            senderName,
-            senderEmail,
-            senderRole,
-            recipientRole,
-            recipientEmail,
-            recipientName,
-            subject,
-            message
-        } = req.body;
+  try {
+    const {
+      senderName,
+      senderEmail,
+      senderRole,
+      recipientRole,
+      recipientEmail,
+      recipientName,
+      subject,
+      message
+    } = req.body;
 
-        if (!senderEmail || !senderName || !senderRole || !recipientRole || !recipientEmail || !recipientName || !subject || !message) {
-            return res.status(400).json({ error: "Missing required fields" });
-        }
-
-        const newMessage = await notificationSchema.create({
-            senderEmail,
-            senderName,
-            senderRole,
-            recipientRole,
-            recipientEmail,
-            recipientName,
-            subject,
-            message,
-            isRead: false,
-            timeStamp: new Date()
-        });
-
-        res.status(200).json({ message: "Message sent successfully", newMessage });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to send message" });
+    if (
+      !senderEmail ||
+      !senderName ||
+      !senderRole ||
+      !recipientRole ||
+      !recipientEmail ||
+      !recipientName ||
+      !subject ||
+      !message
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
+
+    const newMessage = await Notification.create({
+      msgId: `MSG-${Date.now()}`,
+      senderEmail,
+      senderName,
+      senderRole,
+      recipientRole,
+      recipientEmail,
+      recipientName,
+      subject,
+      message,
+      isRead: false,
+      timeStamp: new Date()
+    });
+
+    res.status(200).json({ message: "Message sent successfully", newMessage });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to send message" });
+  }
 };
 
 export {
-    createNotification,
-    getNotifications,
-    getNotificationById,
-    deleteNotification,
-    notifyDeedTransaction,
-    sendMessages
+  createNotification,
+  getNotifications,
+  getNotificationById,
+  deleteNotification,
+  notifyDeedTransaction,
+  sendMessages
 };
