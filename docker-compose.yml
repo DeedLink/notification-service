@@ -1,0 +1,21 @@
+services:
+  app:
+    image: rasindudulshansiriwardhana/notification-service:latest
+    container_name: notification-service
+    ports:
+      - "5007:5007"
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    
+  mongo:
+    image: mongo:6.0
+    container_name: notification-mongo
+    ports:
+      - "27021:27017"
+    volumes:
+      - notification-mongo-data:/data/db
+
+volumes:
+  transaction-mongo-data:
