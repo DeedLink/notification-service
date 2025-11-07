@@ -1,7 +1,7 @@
 //import express from 'express'
-import notificationSchema from '../models/notification'
+import notificationSchema from '../models/Notification.js'
 //import { json, where } from 'sequelize';
-import sendEmail from '../services/emailService';
+import sendEmail from '../services/emailService.js';
 
 const createNotification = async (req, res) => {
     try {
