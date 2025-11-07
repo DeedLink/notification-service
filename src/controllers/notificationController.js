@@ -110,15 +110,15 @@ const sendMessages = async (req, res) => {
 
     const newMessage = await Notification.create({
       msgId: `MSG-${Date.now()}`,
-      senderEmail: senderEmail,
-      senderName: senderName,
-      senderRole: senderRole,
-      recipientRole: recipientRole,
-      recipientEmail: recipientEmail,
-      recipientName: recipientName,
-      subject: subject,
-      message: message,
-      isRead: false,
+      senderEmail,
+      senderName,
+      senderRole,
+      recipientRole,
+      recipientEmail,
+      recipientName,
+      subject,
+      message,
+      isRead,
       timeStamp: new Date()
     });
 
@@ -129,11 +129,24 @@ const sendMessages = async (req, res) => {
   }
 };
 
+//GET sent messages by userId
+const getSentMessages = async (req,res) => {
+  try{
+    const {userEmail} = req.params;
+    const messages = await Notification.find({senderEmail:userEmail});
+    res.json(messages);
+  }catch(error){
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch sent messages by user!" });
+  }
+} ;
+
 export {
   createNotification,
   getNotifications,
   getNotificationById,
   deleteNotification,
   notifyDeedTransaction,
-  sendMessages
+  sendMessages,
+  getSentMessages
 };
