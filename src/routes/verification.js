@@ -1,9 +1,9 @@
 import express from 'express';
-import { Router } from 'express';
+//import { Router } from 'express';
 import nodemailer from 'nodemailer';
 import { generateOTP } from '../utils/generateOTP.js';
-import notificationSchema from '../models/notification.js';
-import { ConstructorFragment } from 'ethers';
+//import notificationSchema from '../models/notification.js';
+//import { ConstructorFragment } from 'ethers';
 
 const router = express.Router();
 
