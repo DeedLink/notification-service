@@ -17,6 +17,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(bodyParser.json());
 
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/verification", verificationRoutes);
