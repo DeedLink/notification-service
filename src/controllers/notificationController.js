@@ -1,7 +1,5 @@
-//import express from 'express'
-import notificationSchema from '../models/Notification.js'
-//import { json, where } from 'sequelize';
-import sendEmail from '../services/emailService.js';
+import notificationSchema from "../models/Notification.js";
+import sendEmail from "../services/emailService.js";
 
 const createNotification = async (req, res) => {
     try {
@@ -18,9 +16,7 @@ const createNotification = async (req, res) => {
         });
 
         res.status(201).json(newNotification);
-    }
-
-    catch (error) {
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
@@ -29,7 +25,6 @@ const getNotifications = async (req, res) => {
     try {
         const notifications = await notificationSchema.findAll();
         res.json(notifications);
-
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -38,26 +33,26 @@ const getNotifications = async (req, res) => {
 const getNotificationById = async (req, res) => {
     try {
         const notification = await notificationSchema.findByPk(req.params.id);
-
         if (!notification) {
-            return res.status(404).json({ error: "Notification not found" })
+            return res.status(404).json({ error: "Notification not found" });
         }
+        res.json(notification);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
 const deleteNotification = async (req, res) => {
     try {
         const rows = await notificationSchema.destroy({ where: { id: req.params.id } });
-
         if (!rows) {
-            return res.status(404).json({ error: "Not found" })
+            return res.status(404).json({ error: "Not found" });
         }
+        res.json({ message: "Notification deleted successfully" });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
 const notifyDeedTransaction = async (req, res) => {
     try {
@@ -70,7 +65,6 @@ const notifyDeedTransaction = async (req, res) => {
             `<h2>Deed Transaction Successful</h2>
             <p>Your transaction is confirmed.</p>
             <pre>${JSON.stringify(deedDetails, null, 2)}</pre>`
-
         );
 
         await sendEmail(
@@ -84,39 +78,48 @@ const notifyDeedTransaction = async (req, res) => {
 
         res.status(200).json({ message: "Emails sent successfully!" });
     } catch (e) {
-         res.status(500).json({ message: "Failed to send emails", error });
+        res.status(500).json({ message: "Failed to send emails", error: e.message });
     }
-}
+};
 
-const sendMessages = async (req,res) => {
-    try{
-        const {senderName, senderEmail, senderRole, recipientRole, recipientEmail,recipientName, subject,message} =   req.body;
+const sendMessages = async (req, res) => {
+    try {
+        const {
+            senderName,
+            senderEmail,
+            senderRole,
+            recipientRole,
+            recipientEmail,
+            recipientName,
+            subject,
+            message
+        } = req.body;
 
-        if(!senderEmail || !senderName || !senderRole || !recipientRole || !recipientEmail || !recipientName || !subject || !message){
+        if (!senderEmail || !senderName || !senderRole || !recipientRole || !recipientEmail || !recipientName || !subject || !message) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
         const newMessage = await notificationSchema.create({
-            senderEmail: senderEmail,
-            senderName: senderName,
-            senderRole: senderRole,
-            recipientRole: recipientRole,
-            recipientEmail: recipientEmail,
-            recipientName: recipientName,
-            subject: subject,
-            message: message,
+            senderEmail,
+            senderName,
+            senderRole,
+            recipientRole,
+            recipientEmail,
+            recipientName,
+            subject,
+            message,
             isRead: false,
             timeStamp: new Date()
         });
 
-        res.status(200).json({message: "Message send Successfully", newMessage});
-    }catch(error){
+        res.status(200).json({ message: "Message sent successfully", newMessage });
+    } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Failed to send message" });
     }
-}
+};
 
-module.exports = {
+export {
     createNotification,
     getNotifications,
     getNotificationById,
