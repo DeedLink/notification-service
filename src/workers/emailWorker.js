@@ -9,13 +9,10 @@ async function handleEmailNotification(data) {
   }
 
   const recipientEmail = await getEmailFromWallet(ownerWalletAddress);
-  //console.log(`Fetched email for wallet: `, recipientEmail);
   if (!recipientEmail) {
     console.warn(`No email found for wallet ${ownerWalletAddress}`);
     return;
   }
-
-  console.log(`Sending email to ${recipientEmail} for deed notification.`);
 
   const subject = "New Deed Sent for Registration";
   const message = `A new deed has been created for wallet: ${ownerWalletAddress} at ${time}`;
@@ -23,13 +20,30 @@ async function handleEmailNotification(data) {
     <h2>New Deed Registered!</h2>
     <p><strong>Wallet:</strong> ${ownerWalletAddress}</p>
     <p><strong>Survey Plan:</strong> ${deed.surveyPlanNumber || "N/A"}</p>
-    <p><strong>Created At:</strong> ${time ? new Date(time).toLocaleString() : "N/A"}</p>
+    <p><strong>Created At:</strong> ${
+      time ? new Date(time).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) : "N/A"
+    }</p>
   `;
 
-  try {
-    await sendEmail({ to: recipientEmail, subject, text: message, html });
-    console.log(`Email sent successfully to ${recipientEmail}`);
-  } catch (error) {
-    console.error("Failed to send email:", error.message);
+  const maxRetries = 3;
+  let attempt = 0;
+
+  while (attempt < maxRetries) {
+    try {
+      attempt++;
+      console.log(`Attempt ${attempt}: Sending email to ${recipientEmail}...`);
+      await sendEmail({ to: recipientEmail, subject, text: message, html });
+      console.log(`Email sent successfully to ${recipientEmail}`);
+      return;
+    } catch (error) {
+      console.error(`Attempt ${attempt} failed:`, error.message);
+      if (attempt < maxRetries) {
+        const delay = Math.pow(2, attempt) * 1000;
+        console.log(`Retrying in ${delay / 1000} seconds...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      } else {
+        console.error(`All ${maxRetries} attempts failed for ${recipientEmail}`);
+      }
+    }
   }
 }
