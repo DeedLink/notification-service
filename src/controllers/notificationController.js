@@ -110,15 +110,15 @@ const sendMessages = async (req, res) => {
 
     const newMessage = await Notification.create({
       msgId: `MSG-${Date.now()}`,
-      senderEmail,
-      senderName,
-      senderRole,
-      recipientRole,
-      recipientEmail,
-      recipientName,
-      subject,
-      message,
-      isRead,
+      senderEmail: senderEmail,
+      senderName: senderName,
+      senderRole: senderRole,
+      recipientRole: recipientRole,
+      recipientEmail: recipientEmail,
+      recipientName: recipientName,
+      subject:subject,
+      message: message,
+      isRead: false,
       timeStamp: new Date()
     });
 
