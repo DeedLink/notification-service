@@ -12,8 +12,28 @@ import "./workers/emailWorker.js";
 connectDb();
 
 const app = express();
-app.use(cors());
-app.options("*", cors()); 
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://your-frontend.vercel.app" // optional
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
+
+app.options("*", cors());
+
 app.use(express.json());
 
 app.use("/api/notifications", notificationRoutes);
