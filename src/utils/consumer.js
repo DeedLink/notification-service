@@ -10,7 +10,7 @@ export async function startConsumer(onMessage) {
     await channel.prefetch(1);
     console.log("Prefetch set to 1");
 
-    const consumerTag = await channel.consume(
+    const consumerTag = channel.consume(
       process.env.RABBITMQ_QUEUE,
       async (msg) => {
         if (!msg) {
