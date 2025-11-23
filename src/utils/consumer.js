@@ -18,9 +18,6 @@ export async function startConsumer(onMessage) {
         } catch (err) {
           console.error("Error processing message:", err.message);
           console.error("Error stack:", err.stack);
-          // Reject message and don't requeue to prevent infinite retry loops
-          // Messages will be lost, but prevents queue blocking
-          // For production, consider implementing a dead letter queue
           channel.nack(msg, false, false);
           console.warn("Message rejected and not requeued due to processing error");
         }
