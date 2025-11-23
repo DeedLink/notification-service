@@ -2,10 +2,15 @@ import { getChannel } from "./rabbitmq.js";
 
 export async function startConsumer(onMessage) {
   try {
+    console.log("Attempting to get RabbitMQ channel...");
     const channel = await getChannel();
-    console.log(`Listening for messages on queue: "${process.env.RABBITMQ_QUEUE}"`);
+    console.log(`Successfully got channel. Listening for messages on queue: "${process.env.RABBITMQ_QUEUE}"`);
 
-    channel.consume(
+    // Set prefetch to 1 to process one message at a time
+    await channel.prefetch(1);
+    console.log("Prefetch set to 1");
+
+    const consumerTag = await channel.consume(
       process.env.RABBITMQ_QUEUE,
       async (msg) => {
         if (!msg) {
@@ -28,8 +33,18 @@ export async function startConsumer(onMessage) {
       },
       { noAck: false }
     );
+    
+    console.log(`Consumer started successfully with tag: ${consumerTag}`);
+    console.log("Waiting for messages...");
+    
+    return channel;
   } catch (error) {
     console.error("Error starting RabbitMQ consumer:", error.message);
-    setTimeout(() => startConsumer(onMessage), 5000);
+    console.error("Error stack:", error.stack);
+    setTimeout(() => {
+      console.log("Retrying to start consumer in 5 seconds...");
+      startConsumer(onMessage);
+    }, 5000);
+    throw error;
   }
 }

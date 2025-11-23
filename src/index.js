@@ -21,5 +21,14 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/verification", verificationRoutes);
 app.use("/api/deed-notification", deedNotificationRoutes);
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ 
+    status: "ok", 
+    service: "notification-service",
+    timestamp: new Date().toISOString()
+  });
+});
+
 const PORT = process.env.PORT || 5007;
 app.listen(PORT, () => console.log(`Notification service running on port ${PORT}`));
