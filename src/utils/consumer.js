@@ -27,7 +27,6 @@ const startConsuming = async (channel, onMessage) => {
           const content = JSON.parse(msg.content.toString());
           console.log("Received message from queue:", JSON.stringify(content, null, 2));
           
-          // Process message
           await onMessage(content);
           
           // Acknowledge message
