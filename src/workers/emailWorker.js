@@ -1,13 +1,14 @@
 import { startConsumer } from "../utils/consumer.js";
-import { handleEmailNotification } from "../utils/emailHandler.js";
+import { routeMessage } from "../utils/messageRouter.js";
 
 console.log("Email worker loaded, starting consumer...");
 
 // Start consumer with robust error handling and auto-restart
+// Uses message router to handle both deed and transaction notifications
 const startConsumerWithRetry = async () => {
   try {
-    await startConsumer(handleEmailNotification);
-    console.log("Consumer started successfully");
+    await startConsumer(routeMessage);
+    console.log("Consumer started successfully - ready to handle deed and transaction notifications");
   } catch (error) {
     console.error("Failed to start email consumer:", error);
     console.error("Error stack:", error.stack);
